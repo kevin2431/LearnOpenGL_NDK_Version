@@ -1,3 +1,7 @@
+//
+// Created by zx on 19-8-14.
+//
+
 #include <jni.h>
 #include <string>
 #include <iostream>
@@ -17,16 +21,20 @@
 // layout 可以代替glgetattributionLocation
 const char *vertexShaderSource = "#version 300 es\n"
                                  "layout (location = 0) in vec3 aPos;\n"
+                                 "out vec4 vertexColor;\n"
                                  "void main()\n"
                                  "{\n"
                                  "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                 "vertexColor = vec4(0.5,0.0,0.0,1.0);\n"
                                  "}\0";
 const char *fragmentShaderSource = "#version 300 es\n"
                                    "precision mediump float;\n"
                                    "out vec4 FragColor;\n"
+                                   "in vec4 vertexColor;\n"
                                    "void main()\n"
                                    "{\n"
-                                   "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                   //"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                   "FragColor = vertexColor;\n"
                                    "}\n\0";
 
 // 三角形数组 标准化坐标
@@ -157,17 +165,17 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_airhockey_1cpp_GameLibJNIWrapper_on_1surface_1created(JNIEnv *env, jclass type) {
 
-    // TODO
-    on_surface_created();
+// TODO
+on_surface_created();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_airhockey_1cpp_GameLibJNIWrapper_on_1surface_1changed(JNIEnv *env, jclass type,
-                                                                       jint width, jint height) {
+        jint width, jint height) {
 
-    // TODO
-    on_surface_changed(width, height);
+// TODO
+on_surface_changed(width, height);
 
 }
 
@@ -175,6 +183,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_airhockey_1cpp_GameLibJNIWrapper_on_1draw_1frame(JNIEnv *env, jclass type) {
 
-    // TODO
-    on_draw_frame();
+// TODO
+on_draw_frame();
 }
+
