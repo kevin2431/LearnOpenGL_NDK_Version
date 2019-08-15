@@ -42,7 +42,8 @@ unsigned int indices[] = {
 unsigned int VBO, VAO, EBO;
 
 //unsigned int vertexShader, fragmentShader, shaderProgram;
-unsigned int texture;
+//unsigned int texture;
+unsigned int texture1, texture2;
 
 // 放到包里面读取， sdka读取方式是实现了的
 // 怎么在res里面读取文件， native的方式
@@ -72,16 +73,16 @@ void on_surface_created() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
     // 纹理属性
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(6* sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(6* sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    // 解绑 safe操作
+//    // 解绑 safe操作
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     // 加载和创建纹理
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
     // 设定纹理wrapper参数
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -93,16 +94,48 @@ void on_surface_created() {
 
     // 加载image 创造纹理 生成mipmaps
     int width, height, nrChannels;
-    std::string filename = "/data/data/com.example.airhockey_cpp/wall.jpg";
-    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+    std::string filename1 = "/data/data/com.example.airhockey_cpp/wall.jpg";
+
+    stbi_set_flip_vertically_on_load(true);     // 翻转图像
+    unsigned char *data = stbi_load(filename1.c_str(), &width, &height, &nrChannels, 0);
 
     if(data){
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }else {
-        LOGE("Failed to load texture\n");
+        LOGE("Failed to load texture1\n");
     }
     stbi_image_free(data);
+
+    // texture 2
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // 设定纹理wrapper参数
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // 纹理过滤
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    std::string filename2 = "/data/data/com.example.airhockey_cpp/awesomeface.png";
+
+    data = stbi_load(filename2.c_str(), &width, &height, &nrChannels, 0);
+
+    if(data){
+        // 这张图片有透明度， 所以读入需要rgba
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else {
+        LOGE("Failed to load texture2\n");
+    }
+    stbi_image_free(data);
+
+    // 告知采样器对应的纹理单元，只需要做一次
+    ourShader.use();
+    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"),0);      // 手动设置
+    ourShader.setInt("texture2", 1);    // 通过对应的类
 
 }
 
@@ -117,15 +150,17 @@ void on_draw_frame() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // bind texture
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
 
-    // 三角形
-    //glUseProgram(shaderProgram);
     ourShader.use();
 
     glBindVertexArray(VAO);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 }
 
 extern "C" JNIEXPORT jstring JNICALL
