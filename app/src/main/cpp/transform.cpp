@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <android/log.h>
+#include <ctime>
 
 #include "game.h"
 //#include <GLES2/gl2.h>
@@ -160,8 +161,11 @@ void on_draw_frame() {
 
     // 矩阵变换
     glm::mat4 trans = glm::mat4(1.0f);      //0.9.9版本后，默认构造全0的矩阵，单位阵需要这样赋值
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+//    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+//    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    // 随着时间旋转
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    trans = glm::rotate(trans, (float)std::clock(), glm::vec3(0.0f, 0.0f, 1.0f));
 
     // cpu数据传递给gpu
     unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
