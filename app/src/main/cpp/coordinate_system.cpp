@@ -25,19 +25,63 @@
 
 // set up vertex data (and buffer(s)) and configure vertex attributes
 // ------------------------------------------------------------------
+//float vertices[] = {
+//        // positions          // texture coords
+//        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+//        0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+//        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+//        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
+//};
+// 6个立方体 ，不需要用到索引了
 float vertices[] = {
-        // positions          // texture coords
-        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-        0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
 // 索引数组
-unsigned int indices[] = {
-        0,1,3,
-        1,2,3
-};
+//unsigned int indices[] = {
+//        0,1,3,
+//        1,2,3
+//};
 
 unsigned int VBO, VAO, EBO;
 
@@ -56,15 +100,15 @@ void on_surface_created() {
     // VAO VBO 初始化
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+//    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // 位置属性
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5* sizeof(float), (void*)0);
@@ -137,6 +181,9 @@ void on_surface_created() {
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"),0);      // 手动设置
     ourShader.setInt("texture2", 1);    // 通过对应的类
 
+    // 开启z缓冲 深度测试
+    glEnable(GL_DEPTH_TEST);
+
 }
 
 void on_surface_changed(int weight, int height) {
@@ -147,7 +194,8 @@ void on_surface_changed(int weight, int height) {
 void on_draw_frame() {
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    // 清除深度缓冲
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // bind texture
     glActiveTexture(GL_TEXTURE0);
@@ -161,7 +209,8 @@ void on_draw_frame() {
     glm::mat4 model = glm::mat4(1.0f);  // 保证初始化位单位阵
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // 随时间变换
+    model = glm::rotate(model, (float)std::clock()*glm::radians(50.0f)/100000.0f, glm::vec3(0.5f, 1.0f, 0.0f));
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));  // 物体负方向移动，相当于视野向前吧
     // 宽高比怎么获得
     projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
@@ -177,7 +226,8 @@ void on_draw_frame() {
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 }
 
