@@ -77,6 +77,20 @@ float vertices[] = {
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
+// world space positions of our cubes 不同立方体应该在的位置
+glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+};
+
 // 索引数组
 //unsigned int indices[] = {
 //        0,1,3,
@@ -205,29 +219,60 @@ void on_draw_frame() {
 
     ourShader.use();
 
-    // 不同坐标之间的变换
-    glm::mat4 model = glm::mat4(1.0f);  // 保证初始化位单位阵
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
-    // 随时间变换
-    model = glm::rotate(model, (float)std::clock()*glm::radians(50.0f)/100000.0f, glm::vec3(0.5f, 1.0f, 0.0f));
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));  // 物体负方向移动，相当于视野向前吧
-    // 宽高比怎么获得
-    projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+//    // 不同坐标之间的变换
+//    glm::mat4 model = glm::mat4(1.0f);  // 保证初始化位单位阵
+//    glm::mat4 view = glm::mat4(1.0f);
+//    glm::mat4 projection = glm::mat4(1.0f);
+//    // 随时间变换
+//    model = glm::rotate(model, (float)std::clock()*glm::radians(50.0f)/100000.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+//    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));  // 物体负方向移动，相当于视野向前吧
+//    // 宽高比怎么获得
+//    projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+//
+//    // 获取uniform的位置，并传递数据给着色器
+//    unsigned int modleLoc = glGetUniformLocation(ourShader.ID, "model");
+//    unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
+//    unsigned int projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
+//    // 数据传递的三种方式，setmat还没写
+//    glUniformMatrix4fv(modleLoc, 1, GL_FALSE, glm::value_ptr(model));
+//    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+//    //ourShader.setMat()
+//    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+//
+//    glBindVertexArray(VAO);
+//    glDrawArrays(GL_TRIANGLES, 0, 36);
+//    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    // 获取uniform的位置，并传递数据给着色器
-    unsigned int modleLoc = glGetUniformLocation(ourShader.ID, "model");
+    // create transformations
+    glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+    glm::mat4 projection    = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), 1.2f, 0.1f, 100.0f);
+    view       = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    // pass transformation matrices to the shader
+
     unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
     unsigned int projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
     // 数据传递的三种方式，setmat还没写
-    glUniformMatrix4fv(modleLoc, 1, GL_FALSE, glm::value_ptr(model));
+
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
     //ourShader.setMat()
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+    // render boxes
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    float t = (float)std::clock()/1000000.0f;
+    for (unsigned int i = 0; i < 10; i++)
+    {
+        // calculate the model matrix for each object and pass it to shader before drawing
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, cubePositions[i]);
+        float angle = 20.0f * i;
+        model = glm::rotate(model, t*glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        unsigned int modleLoc = glGetUniformLocation(ourShader.ID, "model");
+        glUniformMatrix4fv(modleLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
 }
 
