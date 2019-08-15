@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # Gradle automatically packages shared libraries with your APK.
 
 include_directories(shader_common.h)
+include_directories(glm-0.9.9.5)
 
 add_library( # Sets the name of the library.
         native-lib
@@ -20,7 +21,7 @@ add_library( # Sets the name of the library.
 
         # Provides a relative path to your source file(s).
         #native-lib.cpp
-        texture.cpp
+        transform.cpp
         )
 
 # Searches for a specified prebuilt library and stores the path as a
